@@ -2,7 +2,7 @@ create table users (id serial primary key, name text, email text, created_at tim
 
 create user pc_api_user identified by 'pc_api_password';
 
-create database pc_api_db owner pc_api_user;
+create database pc_api_db owner admin;
 
 insert into users (name, email)
 values (
