@@ -4,11 +4,11 @@ from flask_restful import Resource, Api
 import mysql.connector
 
 db_connect = mysql.connector.connect(
-    host="url",
+    host="pc-test-db.cjeyhpameiba.us-east-1.rds.amazonaws.com",
     port="3306",
-    user="user",
+    user="admin",
     password="pass",
-    database="price_compare_db",
+    database="pc_test_db",
     charset="utf8mb4"
 )
 app = Flask(__name__)
