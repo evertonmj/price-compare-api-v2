@@ -1,0 +1,28 @@
+
+version: "3.8"
+
+services:
+    db:
+      image: mysql:latest
+      restart: always
+      environment:
+        MYSQL_USER: pc_api_user_db
+        MYSQL_PASSWORD: 123456
+        MYSQL_DATABASE: pc_api_database
+        MYSQL_RANDOM_ROOT_PASSWORD: true
+      ports:
+        - "3306:3306"
+      volumes:
+        - /path/on/host:/var/lib/mysql
+#  localstack:
+#    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+#    image: localstack/localstack
+#    ports:
+#      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+#      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+#    environment:
+#      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+#      - DEBUG=${DEBUG:-0}
+#    volumes:
+#      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+#      - "/var/run/docker.sock:/var/run/docker.sock"
