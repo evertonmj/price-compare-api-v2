@@ -189,18 +189,20 @@ resource "aws_instance" "web_server" {
     subnet_id = aws_subnet.pc_api_public_subnet.id
     associate_public_ip_address = true
     count = 1
+    depends_on = [aws_db_instance.pc_db_01]
     user_data = <<EOF
 #!/bin/bash
 echo "Atualizando apt-get..."
 sudo apt-get update
 echo "Instalamdp dependencias..."
 sudo apt-get install nginx python3 python3-pip git nginx python3-venv -y
+echo "indo para pasta do usuario"
+cd /home/ubuntu
 echo "Criando ambiente Python..."
-echo "Criando amb iente Python..."
-python3 -m venv /home/ubuntu/web_server
+python -m venv /home/ubuntu/web_server
 source /home/ubuntu/web_server/bin/activate
 echo "Instalando dependencias python..."
-sudo pip install flask flask_restful jsoninify sqlalchemy pymysql
+sudo web_server/bin/pip install flask flask_restful jsoninify sqlalchemy pymysql mysql.connector
 IP_CUR_EC2=$(curl http://checkip.amazonaws.com)
 echo "IP publico da instancia"
 #nginx conf
@@ -218,6 +220,17 @@ include proxy_params;
 #restart nginx
 echo "Reiniciando nginx..."
 sudo systemctl restart nginx
+echo "Fazendo download do projeto..."
+git clone https://github.com/evertonmj/price-compare-api-v2.git
+echo "Definindo variaveis de ambiente..."
+export DBHOST="xxxxxxx"
+export DBPORT=3306
+export DBUSER="admin"
+export DBPASS=1234
+export DBNAME="dbbbbbb"
+echo "Iniciando o servico..."
+cd /home/ubuntu/price-compare-api-v2/
+python index.py &
 echo "Instalacao concluida!"
 EOF
     tags = {
