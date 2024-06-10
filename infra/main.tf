@@ -195,16 +195,28 @@ resource "aws_instance" "web_server" {
 echo "Atualizando apt-get..."
 sudo apt-get update
 echo "Instalamdp dependencias..."
-sudo apt-get install nginx python3 python3-pip git nginx python3-venv -y
+sudo apt-get install nginx python3 python3-pip git nginx python3-venv mysql-client -y
+sudo snap install aws-cli --classic
 echo "indo para pasta do usuario"
 cd /home/ubuntu
 echo "Criando ambiente Python..."
-python -m venv /home/ubuntu/web_server
+sudo python3 -m venv /home/ubuntu/web_server
 source /home/ubuntu/web_server/bin/activate
 echo "Instalando dependencias python..."
-sudo web_server/bin/pip install flask flask_restful jsoninify sqlalchemy pymysql mysql.connector
+sudo /home/ubuntu/web_server/bin/pip install flask flask_restful jsonify sqlalchemy pymysql mysql.connector
 IP_CUR_EC2=$(curl http://checkip.amazonaws.com)
 echo "IP publico da instancia"
+echo "Definindo variaveis de ambiente..."
+RDS_ENDPOINT="${aws_db_instance.pc_db_01.address}"
+export DBHOST=$RDS_ENDPOINT
+export DBPORT=3306
+export DBUSER="${aws_db_instance.pc_db_01.username}"
+export DBPASS="${aws_db_instance.pc_db_01.password}"
+export DBNAME="price_compare_db"
+echo $RDS_ENDPOINT
+export MYSQL_PWD=p4ssw0rd
+echo "Criando banco de dados"
+mysql -h $RDS_ENDPOINT -u admin -p -e  " use price_compare_db; GRANT ALL PRIVILEGES ON price_compare_db.* TO 'admin'@'%' WITH GRANT OPTION;FLUSH PRIVILEGES;;create table price_compare_db.users (id serial primary key, name text, email text, created_at timestamp default current_timestamp);"
 #nginx conf
 echo "Criando configuracao NGINX..."
 echo "server {
@@ -220,17 +232,13 @@ include proxy_params;
 #restart nginx
 echo "Reiniciando nginx..."
 sudo systemctl restart nginx
+
 echo "Fazendo download do projeto..."
 git clone https://github.com/evertonmj/price-compare-api-v2.git
-echo "Definindo variaveis de ambiente..."
-export DBHOST="xxxxxxx"
-export DBPORT=3306
-export DBUSER="admin"
-export DBPASS=1234
-export DBNAME="dbbbbbb"
+
 echo "Iniciando o servico..."
 cd /home/ubuntu/price-compare-api-v2/
-python index.py &
+python3 index.py &
 echo "Instalacao concluida!"
 EOF
     tags = {
