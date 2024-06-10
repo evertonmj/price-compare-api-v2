@@ -4,15 +4,6 @@ from flask_restful import Resource, Api
 import mysql.connector
 import os
 
-# db_connect = mysql.connector.connect(
-#     host="pc-test-db.cjeyhpameiba.us-east-1.rds.amazonaws.com",
-#     port="3306",
-#     user="admin",
-#     password="pass",
-#     database="pc_test_db",
-#     charset="utf8mb4"
-# )
-
 DBHOST = os.environ["DBHOST"]
 DBPORT = os.environ['DBPORT']
 DBUSER = os.environ['DBUSER']
